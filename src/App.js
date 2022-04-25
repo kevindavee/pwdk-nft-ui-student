@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import { web3Config } from './config';
 import { useWallet } from './WalletContext';
+import { usePrivateSale} from './PrivateSaleContext';
 
 function App() {
   const {
@@ -11,6 +12,8 @@ function App() {
     switchToNetwork,
     connectToWallet
   } = useWallet();
+
+  const { privateSaleStart } = usePrivateSale();
 
   return (
     <div className="App">
