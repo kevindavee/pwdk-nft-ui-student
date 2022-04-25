@@ -93,7 +93,6 @@ export const WalletProvider = ({ children }) => {
     switchToNetwork,
     connectToWallet
   };
-  console.log(contextValue);
 
   return (
     <WalletContext.Provider value={contextValue}>
