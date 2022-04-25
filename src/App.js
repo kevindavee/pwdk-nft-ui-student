@@ -7,6 +7,7 @@ import { web3Config } from './config';
 
 function App() {
   const [provider, setProvider] = useState();
+  const [rpcProvider, setRpcProvider] = useState();
   const [address, setWalletAddress] = useState('');
 
   useEffect(() => {
@@ -50,9 +51,15 @@ function App() {
       }
       const provider = new ethers.providers.Web3Provider(ethProvider);
       setProvider(provider);
+    };
+
+    const initRpcProvider = () => {
+      const provider = new ethers.providers.JsonRpcProvider(web3Config.rpcUrl);
+      setRpcProvider(provider);
     }
 
     initProvider();
+    initRpcProvider();
   }, []);
 
   const connectToWallet = async () => {
