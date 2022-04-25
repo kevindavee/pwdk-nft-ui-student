@@ -27,9 +27,17 @@ function App() {
       });
     }
 
+    const listenToNetworkChange = async () => {
+      const ethProvider = await detectEthereumProvider();
+      ethProvider.on('chainChanged', (networkId) => {
+
+      });
+    }
+
     if (provider) {
       checkConnectedWallet();
       listenToWalletAddressChange();
+      listenToNetworkChange();
     }
   }, [provider]);
 
