@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import { ethers } from 'ethers';
 import detectEthereumProvider from '@metamask/detect-provider';
+import { web3Config } from './config';
 
 function App() {
   const [provider, setProvider] = useState();
@@ -55,14 +56,34 @@ function App() {
     } catch (e) {
       console.error(e.message);
     }
-  }
+  };
+
+  const switchToNetwork = async () => {
+    const { chainId } = web3Config;
+  
+    try {
+      await provider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: `0x${chainId}`}],
+      })
+    } catch (e) {
+      console.error(e.message);
+    }
+  };
 
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         {address
-          ? <p>{address}</p>
+          ? (
+            <div>
+              <p>{address}</p>
+              <button onClick={switchToNetwork}>
+                Connect to {web3Config.chainName}
+              </button>
+            </div>
+          )
           : <button onClick={connectToWallet}>
             Connect to Metamask
           </button>
