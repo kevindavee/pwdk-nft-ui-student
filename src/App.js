@@ -6,6 +6,23 @@ import detectEthereumProvider from '@metamask/detect-provider';
 
 function App() {
   const [provider, setProvider] = useState();
+  const [adderss, setWalletAddress] = useState('');
+
+  useEffect(() => {
+    const checkConnectedWallet = async () => {
+      const signer = provider.getSigner();
+      try {
+        const address = await signer.getAddress();
+        setWalletAddress(address);
+      } catch (e) {
+        console.error(e.message);
+      }
+    }
+
+    if (provider) {
+      checkConnectedWallet();
+    }
+  }, [provider]);
 
   useEffect(() => {
     const initProvider = async () => {
@@ -26,6 +43,7 @@ function App() {
       await provider.send('eth_requestAccounts', []);
       const signer = provider.getSigner();
       const address = await signer.getAddress();
+      setWalletAddress(address);
     } catch (e) {
       console.error(e.message);
     }
