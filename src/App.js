@@ -19,13 +19,25 @@ function App() {
     }
 
     initProvider();
-  }, [])
+  }, []);
 
+  const connectToWallet = async () => {
+    try {
+      await provider.send('eth_requestAccounts', []);
+      const signer = provider.getSigner();
+      const address = await signer.getAddress();
+    } catch (e) {
+      console.error(e.message);
+    }
+  }
 
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
+        <button onClick={connectToWallet}>
+          Connect to Metamask
+        </button>
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
