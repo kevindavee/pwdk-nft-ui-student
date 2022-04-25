@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import { AppRouter } from './Router';
 import reportWebVitals from './reportWebVitals';
 import { WalletProvider } from './WalletContext';
 import { ContractProvider } from './ContractContext';
@@ -13,7 +13,7 @@ root.render(
     <WalletProvider>
       <ContractProvider>
         <PrivateSaleProvider>
-          <App />
+          <AppRouter />
         </PrivateSaleProvider>
       </ContractProvider>
     </WalletProvider>
