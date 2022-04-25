@@ -3,7 +3,15 @@ import React from 'react';
 const ContractContext = React.createContext({});
 
 export const ContractContextProvider = ({ children }) => {
-    
+    const contextValue = {
+
+    };
+  
+    return (
+      <ContractContext.Provider value={contextValue}>
+        {children}
+      </ContractContext.Provider>
+    );
 };
 
 export const useContract = () => {
