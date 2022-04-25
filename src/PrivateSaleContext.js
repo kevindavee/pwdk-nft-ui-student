@@ -1,10 +1,38 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useContract } from './ContractContext';
+import { useWallet } from './WalletContext';
 
 const PrivateSaleContext = React.createContext({});
 
-export const PrivateSaleContextProvider = ({ children }) => {
-  const contextValue = {
+export const PrivateSaleProvider = ({ children }) => {
+  const { contract } = useContract();
+  const getContract = useCallback(contract, [contract]);
 
+  const { address } = useWallet();
+  const [loading, setLoading] = useState();
+  const [privateSaleStart, setPrivateSaleStart] = useState();
+
+
+  useEffect(() => {
+    const initPrivateSale = async () => {
+      setLoading(true);
+      const readContract = getContract();
+      if (readContract && address) {
+        const [privStartTimestamp] = await Promise.all([
+          readContract.privateSaleTimestamp()
+        ]);
+
+        setPrivateSaleStart(new Date(privStartTimestamp.toNumber() * 1000));
+      }
+      setLoading(false);
+    };
+
+    initPrivateSale();
+  }, [getContract, address]);
+
+  const contextValue = {
+    privateSaleStart,
+    loading
   };
 
   return (

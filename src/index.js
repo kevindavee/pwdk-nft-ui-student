@@ -5,13 +5,16 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { WalletProvider } from './WalletContext';
 import { ContractProvider } from './ContractContext';
+import { PrivateSaleProvider } from './PrivateSaleContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <WalletProvider>
       <ContractProvider>
-        <App />
+        <PrivateSaleProvider>
+          <App />
+        </PrivateSaleProvider>
       </ContractProvider>
     </WalletProvider>
   </React.StrictMode>
