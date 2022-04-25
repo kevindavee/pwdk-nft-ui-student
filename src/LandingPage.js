@@ -2,9 +2,9 @@ import logo from './logo.svg';
 import './App.css';
 import { web3Config } from './config';
 import { useWallet } from './WalletContext';
-import { usePrivateSale} from './PrivateSaleContext';
+import { usePrivateSale } from './PrivateSaleContext';
 
-function App() {
+export function LandingPage() {
   const {
     provider,
     rpcProvider,
@@ -47,5 +47,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
