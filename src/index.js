@@ -4,12 +4,15 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { WalletProvider } from './WalletContext';
+import { ContractProvider } from './ContractContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <WalletProvider>
-      <App />
+      <ContractProvider>
+        <App />
+      </ContractProvider>
     </WalletProvider>
   </React.StrictMode>
 );

@@ -6,7 +6,7 @@ import { useWallet } from './WalletContext';
 
 const ContractContext = React.createContext({});
 
-export const ContractContextProvider = ({ children }) => {
+export const ContractProvider = ({ children }) => {
   const { provider, rpcProvider } = useWallet();
   const [contract, setContract] = useState(null);
   const [readContract, setReadContract] = useState(null);
