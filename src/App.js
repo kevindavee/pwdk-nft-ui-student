@@ -99,9 +99,11 @@ function App() {
         {address ? (
           <div>
             <p>Connected to wallet: {address.substring(0, 5)}...{address.slice(address.length - 4)}</p>
-            <button onClick={switchToNetwork}>
-                Connect to {web3Config.chainName}
-            </button>
+            {chainId !== web3Config.chainId && (
+              <button onClick={switchToNetwork}>
+                  Connect to {web3Config.chainName}
+              </button>
+            )}
           </div>
         ) : (
           <button onClick={connectToWallet}>
