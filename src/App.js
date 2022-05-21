@@ -89,7 +89,6 @@ function App() {
     }
   };
 
-  console.log(typeof chainId, chainId, typeof web3Config.chainId, web3Config.chainId);
   return (
     <div className="App">
       <header className="App-header">
