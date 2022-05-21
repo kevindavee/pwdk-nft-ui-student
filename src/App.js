@@ -9,6 +9,7 @@ function App() {
   const [provider, setProvider] = useState();
   const [rpcProvider, setRpcProvider] = useState();
   const [address, setWalletAddress] = useState('');
+  const [chainId, setChainId] = useState(0);
 
   useEffect(() => {
     const checkConnectedWallet = async () => {
@@ -16,6 +17,8 @@ function App() {
       try {
         const address = await signer.getAddress();
         setWalletAddress(address);
+        const ethProvider = await detectEthereumProvider();
+        setChainId(Number(ethProvider.networkVersion));
       } catch (e) {
         console.error(e.message);
       }
@@ -31,7 +34,7 @@ function App() {
     const listenToNetworkChange = async () => {
       const ethProvider = await detectEthereumProvider();
       ethProvider.on('chainChanged', (networkId) => {
-
+        setChainId(Number(networkId));
       });
     }
 
@@ -86,23 +89,26 @@ function App() {
     }
   };
 
+  console.log(typeof chainId, chainId, typeof web3Config.chainId, web3Config.chainId);
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        {address
-          ? (
-            <div>
-              <p>{address}</p>
-              <button onClick={switchToNetwork}>
+        <button onClick={connectToWallet}>
+          Connect to Metamask
+        </button>
+        {address ? (
+          <div>
+            <p>Connected to wallet: {address.substring(0, 5)}...{address.slice(address.length - 4)}</p>
+            <button onClick={switchToNetwork}>
                 Connect to {web3Config.chainName}
-              </button>
-            </div>
-          )
-          : <button onClick={connectToWallet}>
+            </button>
+          </div>
+        ) : (
+          <button onClick={connectToWallet}>
             Connect to Metamask
           </button>
-        }
+        )}
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
