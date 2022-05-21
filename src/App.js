@@ -6,7 +6,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 
 function App() {
   const [provider, setProvider] = useState();
-  const [adderss, setWalletAddress] = useState('');
+  const [address, setWalletAddress] = useState('');
 
   useEffect(() => {
     const checkConnectedWallet = async () => {
@@ -56,6 +56,9 @@ function App() {
         <button onClick={connectToWallet}>
           Connect to Metamask
         </button>
+        {address && (
+          <p>Connected to wallet: {address.substring(0, 5)}...{address.slice(address.length - 4)}</p>
+        )}
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
