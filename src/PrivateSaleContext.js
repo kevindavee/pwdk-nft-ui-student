@@ -19,7 +19,7 @@ export const PrivateSaleProvider = ({ children }) => {
       const readContract = getContract();
       if (readContract && address) {
         const [privStartTimestamp] = await Promise.all([
-          readContract.privateSaleTimestamp()
+          readContract.privateSaleStartTimestamp()
         ]);
 
         setPrivateSaleStart(new Date(privStartTimestamp.toNumber() * 1000));
