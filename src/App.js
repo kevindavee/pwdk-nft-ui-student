@@ -61,9 +61,6 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <button onClick={connectToWallet}>
-          Connect to Metamask
-        </button>
         {address ? (
           <p>Connected to wallet: {address.substring(0, 5)}...{address.slice(address.length - 4)}</p>
         ) : (
