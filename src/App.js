@@ -8,6 +8,7 @@ import { web3Config } from './config';
 function App() {
   const [provider, setProvider] = useState();
   const [address, setWalletAddress] = useState('');
+  const [chainId, setChainId] = useState(0);
 
   useEffect(() => {
     const checkConnectedWallet = async () => {
@@ -15,6 +16,8 @@ function App() {
       try {
         const address = await signer.getAddress();
         setWalletAddress(address);
+        const ethProvider = await detectEthereumProvider();
+        setChainId(Number(ethProvider.networkVersion));
       } catch (e) {
         console.error(e.message);
       }
@@ -30,7 +33,7 @@ function App() {
     const listenToNetworkChange = async () => {
       const ethProvider = await detectEthereumProvider();
       ethProvider.on('chainChanged', (networkId) => {
-
+        setChainId(Number(networkId));
       });
     }
 
@@ -79,6 +82,7 @@ function App() {
     }
   };
 
+  console.log(typeof chainId, chainId, typeof web3Config.chainId, web3Config.chainId);
   return (
     <div className="App">
       <header className="App-header">
