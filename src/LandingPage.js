@@ -4,10 +4,12 @@ import { web3Config } from './config';
 import { useWallet } from './WalletContext';
 import { usePrivateSale } from './PrivateSaleContext';
 import { useCallback, useEffect, useState } from 'react';
+import { useMint } from './useMint';
 
 export function LandingPage() {
   const [canMint, setCanMint] = useState(false);
   const [message, setMessage] = useState('');
+  const [result, setResult] = useState(null);
 
   const {
     provider,
@@ -26,6 +28,8 @@ export function LandingPage() {
     isCurrentlyPrivSale,
     loading
   } = usePrivateSale();
+
+  const { mint, loading: minting } = useMint();
 
   const getMessage = useCallback(() => {
     const now = new Date();
@@ -87,8 +91,21 @@ export function LandingPage() {
         {!canMint && !loading && message && (
           <p>{message}</p>
         )}
-        {canMint && !loading && (
-          <button>Mint</button>
+        {!result && canMint && !loading && (
+          <button onClick={mint}>Mint</button>
+        )}
+        {!result && canMint && !loading && minting && (
+          <p>Minting NFT(s)...</p>
+        )}
+        {result && (
+          <div>
+            <p>View your result in OpenSea</p>
+            <br />
+            {result.tokenIds.map(tokenId => (
+              <a href={`https://testnets.opensea.io/${web3Config.address}/${tokenId}`} target="__blank">Token {tokenId}</a>
+            ))}
+            <a href={`https://mumbai.polygonscan.com/tx/${result.transactionHash}`} target="__blank">View on Polygon Scan</a>
+          </div>
         )}
         <p>
           Edit <code>src/App.js</code> and save to reload.

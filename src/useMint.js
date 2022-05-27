@@ -1,6 +1,6 @@
-import { ethers } from 'ethers';
 import { useCallback, useState } from 'react';
 import { useContract } from './ContractContext';
+import { usePrivateSale } from './PrivateSaleContext';
 import { useWallet } from './WalletContext';
 
 export const useMint = () => {
@@ -9,18 +9,27 @@ export const useMint = () => {
   const getContract = useCallback(contract, [contract]);
   
   const [loading, setLoading] = useState(false);
+  const { mint: privateMint } = usePrivateSale();
 
   const mint = async () => {
     try {
+      const privMintResult = await privateMint();
+      // Return private mint result as result.
+      // Null means not eligible for private mint and shall continue with public minting
+      if (privMintResult) {
+        return privMintResult;
+      }
+
       const signContract = getContract('signing');
+      const price = await signContract.PRICE();
       setLoading(true);
       const tx = await signContract.mint({
-        value: ethers.utils.parseEther("0.01")
+        value: price
       });
       const receipt = await tx.wait();
       const tokens = await signContract.tokensOfOwner(address);
       return {
-        tokenId: tokens[tokens.length - 1],
+        tokenIds: tokens[tokens.length - 1],
         transactionHash: receipt.transactionHash
       };
     } catch (e) {
