@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useContract } from './ContractContext';
 import { useWallet } from './WalletContext';
 import { ethers } from 'ethers';
@@ -6,8 +6,7 @@ import { ethers } from 'ethers';
 const PrivateSaleContext = React.createContext({});
 
 export const PrivateSaleProvider = ({ children }) => {
-  const { contract } = useContract();
-  const getContract = useCallback(contract, [contract]);
+  const { contract: getContract } = useContract();
 
   const { address } = useWallet();
   const [loading, setLoading] = useState(true);
@@ -32,7 +31,9 @@ export const PrivateSaleProvider = ({ children }) => {
     const receipt = await tx.wait();
     const tokens = await signContract.tokensOfOwner(address);
     return {
-      tokenIds: tokens[tokens.length - mintQty],
+      tokenIds: tokens
+        .slice(Math.max(tokens.length - mintQty, 0))
+        .map((t) => t.toNumber()),
       transactionHash: receipt.transactionHash
     };
   }

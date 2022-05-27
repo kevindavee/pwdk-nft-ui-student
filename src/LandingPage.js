@@ -12,8 +12,6 @@ export function LandingPage() {
   const [result, setResult] = useState(null);
 
   const {
-    provider,
-    rpcProvider,
     address,
     switchToNetwork,
     connectToWallet,
@@ -30,6 +28,11 @@ export function LandingPage() {
   } = usePrivateSale();
 
   const { mint, loading: minting } = useMint();
+
+  const handleMintNft = async () => {
+    const result = await mint();
+    setResult(result);
+  }
 
   const getMessage = useCallback(() => {
     const now = new Date();
@@ -51,7 +54,7 @@ export function LandingPage() {
       const shouldMintOnPublicSale = !isCurrentlyPrivSale && now > privateSaleEnd;
 
       if (shouldMintOnPrivSale || shouldMintOnPublicSale) {
-        // navigate to mint screen
+        setCanMint(true);
       } else {
         setCanMint(false);
         getMessage();
@@ -91,19 +94,21 @@ export function LandingPage() {
         {!canMint && !loading && message && (
           <p>{message}</p>
         )}
-        {!result && canMint && !loading && (
-          <button onClick={mint}>Mint</button>
+        {!result && canMint && !loading && !minting && (
+          <button onClick={handleMintNft}>Mint</button>
         )}
         {!result && canMint && !loading && minting && (
           <p>Minting NFT(s)...</p>
         )}
         {result && (
           <div>
-            <p>View your result in OpenSea</p>
-            <br />
             {result.tokenIds.map(tokenId => (
-              <a href={`https://testnets.opensea.io/${web3Config.address}/${tokenId}`} target="__blank">Token {tokenId}</a>
+              <>
+                <a href={`https://testnets.opensea.io/assets/mumbai/${web3Config.contractAddress}/${tokenId}`} target="__blank">View token #{tokenId} in OpenSea</a>
+                <br />
+              </>
             ))}
+            <br />
             <a href={`https://mumbai.polygonscan.com/tx/${result.transactionHash}`} target="__blank">View on Polygon Scan</a>
           </div>
         )}
