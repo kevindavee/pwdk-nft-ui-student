@@ -5,6 +5,7 @@ import { useWallet } from './WalletContext';
 import { usePrivateSale } from './PrivateSaleContext';
 import { useCallback, useEffect, useState } from 'react';
 import { useMint } from './useMint';
+import { useAirdrop } from './AirdropContext';
 
 export function LandingPage() {
   const [canMint, setCanMint] = useState(false);
@@ -27,10 +28,23 @@ export function LandingPage() {
     loading
   } = usePrivateSale();
 
+  const {
+    allowed,
+    received,
+    loading: loadingAirdrop,
+    claiming,
+    claimAirdrop
+  } = useAirdrop();
+
   const { mint, loading: minting } = useMint();
 
   const handleMintNft = async () => {
     const result = await mint();
+    setResult(result);
+  }
+
+  const handleAirdrop = async () => {
+    const result = await claimAirdrop();
     setResult(result);
   }
 
@@ -94,10 +108,19 @@ export function LandingPage() {
         {!canMint && !loading && message && (
           <p>{message}</p>
         )}
+
+        {/* Button for mint (priv or public sale) */}
         {!result && canMint && !loading && !minting && (
           <button onClick={handleMintNft}>Mint</button>
         )}
-        {!result && canMint && !loading && minting && (
+
+        {/* Button for claim airdrop */}
+        {!loadingAirdrop && allowed && !received && (
+          <button onClick={handleAirdrop}>
+            Claim airdrop
+          </button>
+        )}
+        {!result && canMint && !loading && (minting || claiming) && (
           <p>Minting NFT(s)...</p>
         )}
         {result && (
