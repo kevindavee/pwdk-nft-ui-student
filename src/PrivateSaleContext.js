@@ -9,22 +9,34 @@ export const PrivateSaleProvider = ({ children }) => {
   const getContract = useCallback(contract, [contract]);
 
   const { address } = useWallet();
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(true);
   const [privateSaleStart, setPrivateSaleStart] = useState();
+  const [privateSaleEnd, setPrivateSaleEnd] = useState();
+  const [mintQty, setMintQty] = useState(0);
+  const [hasMinted, setHasMinted] = useState(false);
+  const [isCurrentlyPrivSale, setIsCurrentlyPrivSale] = useState(false);
 
 
   useEffect(() => {
     const initPrivateSale = async () => {
-      setLoading(true);
       const readContract = getContract();
       if (readContract && address) {
-        const [privStartTimestamp] = await Promise.all([
-          readContract.privateSaleTimestamp()
+        setLoading(true);
+        const [privStartTimestamp, privEndTimestamp, mintQtyResult, doneMintingResult] = await Promise.all([
+          readContract.privateSaleStartTimestamp(),
+          readContract.privateSaleEndTimestamp(),
+          readContract.addressToMintQty(address),
+          readContract.addressToDoneMinting(address),
         ]);
+        const now = new Date().getTime() / 1000;
 
         setPrivateSaleStart(new Date(privStartTimestamp.toNumber() * 1000));
+        setPrivateSaleEnd(new Date(privEndTimestamp.toNumber() * 1000));
+        setMintQty(mintQtyResult.toNumber());
+        setHasMinted(doneMintingResult);
+        setIsCurrentlyPrivSale(privStartTimestamp <= now && now <= privEndTimestamp);
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     initPrivateSale();
@@ -32,7 +44,11 @@ export const PrivateSaleProvider = ({ children }) => {
 
   const contextValue = {
     privateSaleStart,
-    loading
+    privateSaleEnd,
+    mintQty,
+    hasMinted,
+    loading,
+    isCurrentlyPrivSale
   };
 
   return (
