@@ -34,7 +34,7 @@ export const WalletProvider = ({ children }) => {
     const listenToNetworkChange = async () => {
       const ethProvider = await detectEthereumProvider();
       ethProvider.on('chainChanged', (networkId) => {
-
+        setChainId(Number(networkId));
       });
     }
 
