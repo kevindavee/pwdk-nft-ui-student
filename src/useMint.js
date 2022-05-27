@@ -20,7 +20,9 @@ export const useMint = () => {
       const receipt = await tx.wait();
       const tokens = await signContract.tokensOfOwner(address);
       return {
-        tokenId: tokens[tokens.length - 1],
+        tokenIds: tokens
+          .slice(Math.max(tokens.length - 1, 0))
+          .map((t) => t.toNumber()),
         transactionHash: receipt.transactionHash
       };
     } catch (e) {
