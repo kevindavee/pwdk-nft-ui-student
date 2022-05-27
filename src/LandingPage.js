@@ -3,8 +3,12 @@ import './App.css';
 import { web3Config } from './config';
 import { useWallet } from './WalletContext';
 import { usePrivateSale } from './PrivateSaleContext';
+import { useCallback, useEffect, useState } from 'react';
 
 export function LandingPage() {
+  const [canMint, setCanMint] = useState(false);
+  const [message, setMessage] = useState('');
+
   const {
     provider,
     rpcProvider,
@@ -14,7 +18,50 @@ export function LandingPage() {
     chainId
   } = useWallet();
 
-  const { privateSaleStart } = usePrivateSale();
+  const {
+    privateSaleStart,
+    privateSaleEnd,
+    mintQty,
+    hasMinted,
+    isCurrentlyPrivSale,
+    loading
+  } = usePrivateSale();
+
+  const getMessage = useCallback(() => {
+    const now = new Date();
+
+    if (now < privateSaleStart) {
+      setMessage(`Comeback during private sale on ${privateSaleStart}`);
+    } else if (isCurrentlyPrivSale && !mintQty) {
+      setMessage(`You are not eligble for private sale minting. Comeback on public sale after: ${privateSaleEnd}`);
+    } else if (isCurrentlyPrivSale && mintQty && hasMinted) {
+      setMessage(`You already minted during private sale. Comeback on public sale: ${privateSaleEnd}`);
+    }
+  }, [hasMinted, isCurrentlyPrivSale, mintQty, privateSaleEnd, privateSaleStart]);
+
+  useEffect(() => {
+    if (!loading && address) {
+      const now = new Date();
+
+      const shouldMintOnPrivSale = isCurrentlyPrivSale && mintQty && !hasMinted;
+      const shouldMintOnPublicSale = !isCurrentlyPrivSale && now > privateSaleEnd;
+
+      if (shouldMintOnPrivSale || shouldMintOnPublicSale) {
+        // navigate to mint screen
+      } else {
+        setCanMint(false);
+        getMessage();
+      }
+    }
+  }, [
+    loading,
+    address,
+    isCurrentlyPrivSale,
+    mintQty,
+    hasMinted,
+    getMessage,
+    privateSaleEnd
+  ]);
 
   return (
     <div className="App">
@@ -33,6 +80,15 @@ export function LandingPage() {
           <button onClick={connectToWallet}>
             Connect to Metamask
           </button>
+        )}
+        {loading && address && (
+          <p>Loading information...</p>
+        )}
+        {!canMint && !loading && message && (
+          <p>{message}</p>
+        )}
+        {canMint && !loading && (
+          <button>Mint</button>
         )}
         <p>
           Edit <code>src/App.js</code> and save to reload.
