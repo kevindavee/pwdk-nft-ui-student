@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { web3Config } from './config';
-import Abi from './abi.json';
+import Abi from './abis/erc721starter.json';
 import { useWallet } from './WalletContext';
 
 const ContractContext = React.createContext({});
