@@ -6,6 +6,7 @@ import { usePrivateSale } from './PrivateSaleContext';
 import { useCallback, useEffect, useState } from 'react';
 import { useMint } from './useMint';
 import { useAirdrop } from './AirdropContext';
+import { WalletSection } from './Components/WalletSection';
 
 export function LandingPage() {
   const [canMint, setCanMint] = useState(false);
@@ -14,9 +15,6 @@ export function LandingPage() {
 
   const {
     address,
-    switchToNetwork,
-    connectToWallet,
-    chainId
   } = useWallet();
 
   const {
@@ -88,20 +86,7 @@ export function LandingPage() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        {address ? (
-          <div>
-            <p>Connected to wallet: {address.substring(0, 5)}...{address.slice(address.length - 4)}</p>
-            {chainId !== web3Config.chainId && (
-              <button onClick={switchToNetwork}>
-                  Connect to {web3Config.chainName}
-              </button>
-            )}
-          </div>
-        ) : (
-          <button onClick={connectToWallet}>
-            Connect to Metamask
-          </button>
-        )}
+        <WalletSection />
         {loading && address && (
           <p>Loading information...</p>
         )}
