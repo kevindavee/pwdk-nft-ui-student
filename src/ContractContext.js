@@ -24,7 +24,7 @@ export const ContractProvider = ({ children }) => {
     if (provider) {
       const { contractAddress } = web3Config;
       setContract(new ethers.Contract(
-        contractAddress, Abi, provider
+        contractAddress, Abi, provider.getSigner()
       ));
     }
   }, [provider]);

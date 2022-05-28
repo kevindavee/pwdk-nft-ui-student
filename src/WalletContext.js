@@ -9,6 +9,7 @@ export const WalletProvider = ({ children }) => {
   const [provider, setProvider] = useState();
   const [rpcProvider, setRpcProvider] = useState();
   const [address, setWalletAddress] = useState('');
+  const [chainId, setChainId] = useState(0);
 
   useEffect(() => {
     const checkConnectedWallet = async () => {
@@ -16,6 +17,8 @@ export const WalletProvider = ({ children }) => {
       try {
         const address = await signer.getAddress();
         setWalletAddress(address);
+        const ethProvider = await detectEthereumProvider();
+        setChainId(Number(ethProvider.networkVersion));
       } catch (e) {
         console.error(e.message);
       }
@@ -31,7 +34,7 @@ export const WalletProvider = ({ children }) => {
     const listenToNetworkChange = async () => {
       const ethProvider = await detectEthereumProvider();
       ethProvider.on('chainChanged', (networkId) => {
-
+        setChainId(Number(networkId));
       });
     }
 
@@ -91,7 +94,8 @@ export const WalletProvider = ({ children }) => {
     provider,
     rpcProvider,
     switchToNetwork,
-    connectToWallet
+    connectToWallet,
+    chainId,
   };
 
   return (

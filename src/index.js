@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { WalletProvider } from './WalletContext';
 import { ContractProvider } from './ContractContext';
 import { PrivateSaleProvider } from './PrivateSaleContext';
+import { AirdropProvider } from './AirdropContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -13,7 +14,9 @@ root.render(
     <WalletProvider>
       <ContractProvider>
         <PrivateSaleProvider>
-          <AppRouter />
+          <AirdropProvider>
+            <AppRouter />
+          </AirdropProvider>
         </PrivateSaleProvider>
       </ContractProvider>
     </WalletProvider>
