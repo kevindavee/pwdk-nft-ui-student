@@ -4,4 +4,5 @@ export const web3Config = {
     rpcUrl: process.env.REACT_APP_RPC_URL,
     contractAddress: process.env.REACT_APP_CONTRACT_ADDRESS,
     conferenceContractAddress: process.env.REACT_APP_CONFERENCE_CONTRACT_ADDRESS,
+    verificationUrl: process.env.REACT_APP_VERIFICATION_URL,
 }
