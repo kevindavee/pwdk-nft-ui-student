@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from "react";
+import axios from 'axios';
 import { useWallet } from './WalletContext';
 import { web3Config } from './config';
 import Abi from './abis/conference.json';
@@ -11,6 +12,7 @@ export const ConferenceContextProvider = ({ children }) => {
   const [contract, setContract] = useState(null);
   const [readContract, setReadContract] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [signing, setSigning] = useState(false);
 
   useEffect(() => {
     if (rpcProvider) {
@@ -51,9 +53,53 @@ export const ConferenceContextProvider = ({ children }) => {
     }
   }
 
+  const mintGroupTicket = async (addresses) => {
+    try {
+      if (addresses.length !== 4) {
+        throw Error("addresses must be length of 4");
+      }
+      setLoading(true);
+      setSigning(true);
+      const [tokens, allowGroupPurchase] = await Promise.all([
+        readContract.tokensOfOwner(address),
+        readContract.addressToAllowMGroupPurchase(address)
+      ]);
+      if (!allowGroupPurchase) {
+        const stringifiedTokens = JSON.stringify(tokens.map(t => t.toNumber()));
+        const signer = provider.getSigner();
+        const signatureData = await signer.signMessage(stringifiedTokens);
+        setSigning(false);
+  
+        const { data } = await axios.post('/verify', {
+          signature: signatureData,
+          address,
+        });
+  
+        await contract.verify(stringifiedTokens, data.signature);
+      }
+
+      const tx = await contract.mintGroupTicket(addresses);
+      const receipt = await tx.wait();
+
+      const result = await Promise.all([address, ...addresses].map(addr => readContract.tokensOfOwner(addr)));
+      setLoading(false);
+      return {
+        tokenIds: result.map(tokens => tokens[0].toNumber()),
+        transactionHash: receipt.transactionHash
+      };
+    } catch (e) {
+      setLoading(false);
+      console.error(e.response ? e.response.data.message : e.message);
+      return;
+    }
+  }
+
   const contextValue = {
     contract: (purpose) => purpose === 'signing' ? contract : readContract,
     mintIndividualTicket,
+    mintGroupTicket,
+    loading,
+    signing,
   };
 
   return (
