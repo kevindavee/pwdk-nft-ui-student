@@ -7,9 +7,20 @@ import { useWallet } from './WalletContext';
 const ContractContext = React.createContext({});
 
 export const ContractProvider = ({ children }) => {
-  const { provider, rpcProvider } = useWallet();
+  const { provider, rpcProvider, address } = useWallet();
   const [contract, setContract] = useState(null);
   const [readContract, setReadContract] = useState(null);
+  const [balance, setBalance] = useState();
+
+  useEffect(() => {
+    const getBalance = async () => {
+      const balance = await readContract.balanceOf(address);
+      setBalance(balance.toNumber());
+    }
+    if (readContract && address) {
+      getBalance();
+    }
+  }, [address, readContract]);
 
   useEffect(() => {
     if (rpcProvider) {
@@ -31,6 +42,7 @@ export const ContractProvider = ({ children }) => {
 
   const contextValue = {
     contract: (purpose) => purpose === 'signing' ? contract : readContract,
+    balance
   };
 
   return (
