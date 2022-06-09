@@ -19,6 +19,7 @@ export const useMint = () => {
       });
       const receipt = await tx.wait();
       const tokens = await signContract.tokensOfOwner(address);
+      setLoading(false);
       return {
         tokenIds: tokens
           .slice(Math.max(tokens.length - 1, 0))
