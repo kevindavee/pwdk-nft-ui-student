@@ -43,7 +43,7 @@ export const AirdropProvider = ({ children }) => {
         transactionHash: receipt.transactionHash
       };
     } catch (e) {
-      setLoading(false);
+      setClaiming(false);
       console.error(e.message);
       throw e;
     }
