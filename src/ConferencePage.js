@@ -34,14 +34,19 @@ export const ConferencePage = () => {
               <div>
                 <button onClick={handleSingleTicketMint}>Mint Single Ticket</button>
                 <br />
-                {groupAddresses.map((addr, i) => (
-                  <input
-                    type="text"
-                    value={addr}
-                    placeholder={`Address ${i + 1}`}
-                    onChange={e => handleAddressChange(e.target.value, i)} />
-                ))}
-                <button onClick={handleGroupTicketMint}>Mint Group Ticket</button>
+                <br />
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {groupAddresses.map((addr, i) => (
+                    <input
+                      type="text"
+                      value={addr}
+                      placeholder={`Address ${i + 1}`}
+                      onChange={e => handleAddressChange(e.target.value, i)}
+                      style={{ marginBottom: 10 }}
+                    />
+                  ))}
+                  <button onClick={handleGroupTicketMint}>Mint Group Ticket</button>
+                </div>
               </div>
             ) : (
               <div></div>
