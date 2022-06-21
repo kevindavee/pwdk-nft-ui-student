@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { useWallet } from './WalletContext';
+import { useContract } from './ContractContext';
 import { web3Config } from './config';
 import Abi from './abis/conference.json';
 
@@ -9,6 +10,7 @@ const ConferenceContext = React.createContext({});
 
 export const ConferenceContextProvider = ({ children }) => {
   const { provider, rpcProvider, address } = useWallet();
+  const { contract: artContract } = useContract();
   const [contract, setContract] = useState(null);
   const [readContract, setReadContract] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -60,23 +62,25 @@ export const ConferenceContextProvider = ({ children }) => {
       }
       setLoading(true);
       setSigning(true);
+      const artSigningContract = artContract('signing');
       const [tokens, allowGroupPurchase] = await Promise.all([
-        readContract.tokensOfOwner(address),
+        artSigningContract.tokensOfOwner(address),
         readContract.addressToAllowMGroupPurchase(address)
       ]);
       if (!allowGroupPurchase) {
         const stringifiedTokens = JSON.stringify(tokens.map(t => t.toNumber()));
         const signer = provider.getSigner();
         const signatureData = await signer.signMessage(stringifiedTokens);
-        setSigning(false);
   
         const { data } = await axios.post('/verify', {
           signature: signatureData,
           address,
         });
   
-        await contract.verify(stringifiedTokens, data.signature);
+        const verifyTx = await contract.verify(stringifiedTokens, data.signature);
+        await verifyTx.wait();
       }
+      setSigning(false);
 
       const tx = await contract.mintGroupTicket(addresses);
       const receipt = await tx.wait();
@@ -84,7 +88,7 @@ export const ConferenceContextProvider = ({ children }) => {
       const result = await Promise.all([address, ...addresses].map(addr => readContract.tokensOfOwner(addr)));
       setLoading(false);
       return {
-        tokenIds: result.map(tokens => tokens[0].toNumber()),
+        tokenIds: result.map(tokensOfUser => tokensOfUser[0].toNumber()),
         transactionHash: receipt.transactionHash
       };
     } catch (e) {
