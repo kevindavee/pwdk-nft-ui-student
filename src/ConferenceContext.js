@@ -40,7 +40,7 @@ export const ConferenceContextProvider = ({ children }) => {
       const tx = await contract.mintTicket();
       const receipt = await tx.wait();
 
-      const tokens = readContract.tokensOfOwner(address);
+      const tokens = await readContract.tokensOfOwner(address);
       setLoading(false);
       return {
         tokenIds: tokens
@@ -65,14 +65,14 @@ export const ConferenceContextProvider = ({ children }) => {
       const artSigningContract = artContract('signing');
       const [tokens, allowGroupPurchase] = await Promise.all([
         artSigningContract.tokensOfOwner(address),
-        readContract.addressToAllowMGroupPurchase(address)
+        readContract.addressToAllowGroupPurchase(address)
       ]);
       if (!allowGroupPurchase) {
-        const stringifiedTokens = JSON.stringify(tokens.map(t => t.toNumber()));
+        const stringifiedTokens = JSON.stringify(tokens.map(t => t.toNumber()).join(','));
         const signer = provider.getSigner();
         const signatureData = await signer.signMessage(stringifiedTokens);
   
-        const { data } = await axios.post('/verify', {
+        const { data } = await axios.post(`${web3Config.verificationUrl}/verify`, {
           signature: signatureData,
           address,
         });
@@ -92,8 +92,9 @@ export const ConferenceContextProvider = ({ children }) => {
         transactionHash: receipt.transactionHash
       };
     } catch (e) {
+      setSigning(false);
       setLoading(false);
-      console.error(e.response ? e.response.data.message : e.message);
+      console.error(e.response && e.response.data ? e.response.data.message : e.message);
       return;
     }
   }
