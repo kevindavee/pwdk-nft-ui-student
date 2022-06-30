@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useMint } from './useMint';
 import { useAirdrop } from './AirdropContext';
 import { WalletSection } from './Components/WalletSection';
+import { TokenResult } from './Components/TokenResult';
 
 export function LandingPage() {
   const [canMint, setCanMint] = useState(false);
@@ -108,18 +109,7 @@ export function LandingPage() {
         {!result && canMint && !loading && (minting || claiming) && (
           <p>Minting NFT(s)...</p>
         )}
-        {result && (
-          <div>
-            {result.tokenIds.map(tokenId => (
-              <>
-                <a href={`https://testnets.opensea.io/assets/mumbai/${web3Config.contractAddress}/${tokenId}`} target="__blank">View token #{tokenId} in OpenSea</a>
-                <br />
-              </>
-            ))}
-            <br />
-            <a href={`https://mumbai.polygonscan.com/tx/${result.transactionHash}`} target="__blank">View on Polygon Scan</a>
-          </div>
-        )}
+        <TokenResult result={result} address={web3Config.contractAddress} />
       </header>
     </div>
   );
